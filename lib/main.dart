@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:vibration/vibration.dart';
 
 void main() {
   runApp(const BalanceApp());
@@ -43,12 +43,11 @@ class _BalanceScreenState extends State<BalanceScreen> {
     super.initState();
 
     _accelerometerSubscription =
-        accelerometerEvents.listen((AccelerometerEvent event) {
+        accelerometerEventStream().listen((AccelerometerEvent event) {
           setState(() {
             x = event.x;
             y = event.y;
 
-            // Tolleranza (più piccolo = più difficile)
             const double tolerance = 0.5;
 
             if (x.abs() < tolerance && y.abs() < tolerance) {
@@ -88,9 +87,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
   }
 
   Future<void> _vibrate() async {
-    if (await Vibration.hasVibrator() ?? false) {
-      Vibration.vibrate(duration: 200);
-    }
+    HapticFeedback.mediumImpact();
   }
 
   void _showSuccessDialog() {
@@ -150,3 +147,4 @@ class _BalanceScreenState extends State<BalanceScreen> {
     );
   }
 }
+
